@@ -5,17 +5,20 @@ release=$(cat /etc/redhat-release | egrep -o '[1-9] ?' | head -1)
 dir=$(pwd)
 echo -e "\e[104m$release \e[49m"
 
+#Unpack files.
 echo -ne "\e[104mExtracting setup files....\e[49m"
 mkdir $dir/pkgs &>/dev/null
 tar -xvf pkgs.tar -C $dir/pkgs/ &>/dev/null
 echo -e "\e[104mDone \e[49m"
 
+#Remove subscription-manager and rhs-classic files.
 echo -ne "\e[104mCleaning up subscription manager....\e[49m"
 yum -y rhn* &>/dev/null
 yum -y erase python-rhsm &>/dev/null
 sed -i "s/proxy.*/#&/g" /etc/yum.conf
 echo -e "\e[104mDone \e[49m"
 
+#Re-Installing subscription-manager and files.
 echo -ne "\e[104mNow setting up subscription manager....\e[49m"
 case $release in
 	5) 
