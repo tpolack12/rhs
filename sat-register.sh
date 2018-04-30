@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -z $1 || -z $2 ]; then
+	echo "Usage: sat-register <ServerFQDN> <ServerIP> <ORG> <activation-key>";
+	exit();
+fi
+
 clear; echo -ne "\e[104mGetting release....\e[49m" ; sleep 1
 release=$(cat /etc/redhat-release | egrep -o '[1-9] ?' | head -1)
 dir=$(pwd)
@@ -26,12 +31,12 @@ case $release in
 		sed -i 's/1/0/g' /etc/yum.repos.d/*
 		yum -y --nogpgcheck install $dir/pkgs/sm_$release* &>/dev/null
 		echo -ne "\e[104mInstalling Katello-Bootstrap....\e[49m" &>/dev/null
-		rpm -Uvh http://zena.jncb.com/pub/katello-ca-consumer-latest.noarch.rpm &>/dev/null
+		rpm -Uvh http://$1/pub/katello-ca-consumer-latest.noarch.rpm &>/dev/null
 		test -d "/etc/pki/product" || mkdir -p "/etc/pki/product" && cp /etc/pki/product-default/69.pem /etc/pki/product/69.pem
 		sed -i '602 s/self.*/#&/' /usr/lib64/python2.4/logging/handlers.py
-		subscription-manager register --org="National_Commercial_Bank" --activationkey="rhel-5" --force &>/dev/null
+		subscription-manager register --org="$3" --activationkey="$4" --force &>/dev/null
 		echo -e "\e[104mDone \e[49m"
-		echo -e "\e[104mPlease attach subscription on Zena for $HOSTNAME.... \e[49m"
+		echo -e "\e[104mPlease attach subscription on $1 for $HOSTNAME.... \e[49m"
 		read -p $'\e[104mPress enter to continue.... \e[49m'
 		echo -ne "\e[104mRe-Installing and upgrading subscription-manager.... \e[49m"
 		subscription-manager attach --auto &>/dev/null
@@ -51,10 +56,10 @@ case $release in
 		mv /etc/rhsm/rhsm.conf.kat-backup /etc/rhsm/rhsm.conf
 		echo -ne "\e[104mInstalling Katello-Bootstrap.... \e[49m"
 		subscription-manager clean &>/dev/null
-		rpm -Uvh http://zena.jncb.com/pub/katello-ca-consumer-latest.noarch.rpm --replacefiles --replacepkgs &>/dev/null
-		subscription-manager register --org="National_Commercial_Bank" --activationkey="rhel-6" --force &>/dev/null
+		rpm -Uvh http://$1/pub/katello-ca-consumer-latest.noarch.rpm --replacefiles --replacepkgs &>/dev/null
+		subscription-manager register --org="$3" --activationkey="$4" --force &>/dev/null
 		echo -e "\e[104mDone \e[49m"
-		echo -e "\e[104mPlease attach subscription on Zena for $HOSTNAME.... \e[49m"
+		echo -e "\e[104mPlease attach subscription on $1 for $HOSTNAME.... \e[49m"
 		read -p $'\e[104mPress enter to continue.... \e[49m'
 		echo -ne "\e[104mRe-Installing and upgrading subscription-manager \e[49m"
 		subscription-manager subscribe --auto &>/dev/null
@@ -76,10 +81,10 @@ case $release in
 		mv /etc/rhsm/rhsm.conf.kat-backup /etc/rhsm/rhsm.conf
 		echo -ne "\e[104mInstalling Katello-Bootstrap.... \e[49m"
 		subscription-manager clean &>/dev/null
-		rpm -Uvh http://zena.jncb.com/pub/katello-ca-consumer-latest.noarch.rpm --replacefiles --replacepkgs &>/dev/null
-		subscription-manager register --org="National_Commercial_Bank" --activationkey="rhel-7" --force &>/dev/null
+		rpm -Uvh http://$1/pub/katello-ca-consumer-latest.noarch.rpm --replacefiles --replacepkgs &>/dev/null
+		subscription-manager register --org="$3" --activationkey="$4" --force &>/dev/null
 		echo -e "\e[104mDone \e[49m"
-		echo -e "\e[104mPlease attach subscription on Zena for $HOSTNAME.... \e[49m"
+		echo -e "\e[104mPlease attach subscription on $1 for $HOSTNAME.... \e[49m"
 		read -p $'\e[104mPress enter to continue.... \e[49m'
 		echo -ne "\e[104mAttching subscription(s).... "
 		subscription-manager attach --auto &>/dev/null
